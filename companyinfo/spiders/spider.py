@@ -9,9 +9,9 @@ from scrapy.selector import Selector
 class CompanySpider(Spider):
     print "***************************************************"
     name = 'companyinfo'
-    allowed_domains=['itjuzi.com']
+    allowed_domains = ['itjuzi.com']
     start_urls = []
-    for i in range(1, 2, 1):
+    for i in range(1, 20, 1):
         start_urls.append('https://www.itjuzi.com/company?page=%d'% i)
         # start_urls.append('https://www.itjuzi.com/investevents?page=%d'% i)
         # 'https://www.itjuzi.com/investevents?page=2'
@@ -54,7 +54,6 @@ class CompanySpider(Spider):
             except:
                 finaceinfo = "暂未收录融资信息"
             item['finaceinfo'] = finaceinfo
-
             try:
                 item['companylink'] = site.xpath('i[@class="cell pic"]/a[@target="_blank"]/@href').extract()[0]
             except:
@@ -98,21 +97,37 @@ class CompanySpider(Spider):
         except:
             companytag = "无Tag"
         try:
-            companybasicinfo = sel.xpath('//div[@class="block-inc-info on-edit-hide"]/div[2]//text()').extract()
-            companybasicinfo = companybasicinfo[1].replace("\n", "").replace("\t", "").replace(" ", "")
+            basicinfo = sel.xpath('//div[@class="block-inc-info on-edit-hide"]/div[2]//text()').extract()
+            companybasicinfo = ""
+            max = 0
+            for info in basicinfo:
+                info = info.replace("\n", "").replace("\t", "").replace(" ", "")
+                if "购买数据请联系hello@itjuzi.com" not in info and len(info) > max:
+                    companybasicinfo = info
+                    max = len(info)
+            # if len(basicinfo) > 1:
+            #     companybasicinfo = (";".join(basicinfo)+"&&&"+basicinfo[1]).replace("\n", "").replace("\t", "").replace(" ", "")
+            # else:
+            #     companybasicinfo = (";".join(basicinfo)+"&&&"+basicinfo[0]).replace("\n", "").replace("\t", "").replace(" ", "")
         except:
             companybasicinfo = "无基本信息"
         try:
             companyname = sel.xpath('//div[@class="block-inc-info on-edit-hide"]//div[@class="des-more"]//h2[@class="seo-second-title"]/text()').extract()[0]
+            namesplit = companyname.split("：")
+            if '暂未收录'in namesplit[1]:
+                companyname = sel.xpath('//div[@class="rowhead"]//div[@class="picinfo"]//span[@class="title"]/h1/text()').extract()[0].replace("\n", "").replace("\t", "").replace(" ", "")
+            else:
+                companyname = namesplit[1]
         except:
             companyname = "无公司名字"
         try:
             establishtime = sel.xpath('//div[@class="block-inc-info on-edit-hide"]//div[@class="des-more"]//h2[@class="seo-second-title"]/text()').extract()[1]
+            establishtime = establishtime.split("：")[1]
         except:
             establishtime = "无成立时间"
         try:
             companysize = sel.xpath('//div[@class="block-inc-info on-edit-hide"]//div[@class="des-more"]//h2[@class="seo-second-title"]/text()').extract()[2]
-            companysize = companysize.replace("\n", "").replace("\t", "").replace(" ", "")
+            companysize = companysize.replace("\n", "").replace("\t", "").replace(" ", "").split("：")[1]
         except:
             companysize = "无公司规模"
         try:

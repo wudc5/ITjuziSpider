@@ -18,7 +18,7 @@ class CompanyinfoPipeline(object):
     def process_item(self, item, spider):
         open_file_object = csv.writer(self.file)
         open_file_object.writerow([item["companyname"], item["companylogolink"],
-                                   item["companylink"], item["companylink"],
+                                   item["companylink"], item["industry"],
                                    item["establishtime"], item["companylocation"],
                                    item["finaceinfo"], item["companybasicinfo"],
                                    item["companytag"], item["companysize"],
