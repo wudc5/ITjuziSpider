@@ -14,10 +14,15 @@ sys.setdefaultencoding("utf-8")
 
 class CompanyinfoPipeline(object):
     def __init__(self):
-        self.file=open('companyinfo.csv','a')
+        self.file = open('companyinfo.csv','a')
     def process_item(self, item, spider):
-        open_file_object=csv.writer(self.file)
-        open_file_object.writerow([item["title"],item["link"],item["Time_Limit"],item["Memory_Limit"],item["Description"],item["Input"],item["Output"],item["Sample_Input"],item["Sample_Output"]])
+        open_file_object = csv.writer(self.file)
+        open_file_object.writerow([item["companyname"], item["companylogolink"],
+                                   item["companylink"], item["companylink"],
+                                   item["establishtime"], item["companylocation"],
+                                   item["finaceinfo"], item["companybasicinfo"],
+                                   item["companytag"], item["companysize"],
+                                   item["companystatus"]])
         #line=json.dumps(dict(item))+"\n"
         #self.file.write(line.decode('unicode_escape'))
         return item
